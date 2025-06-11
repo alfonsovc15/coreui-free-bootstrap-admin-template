@@ -77,6 +77,39 @@ const cardChart1 = new Chart(document.getElementById('card-chart1'), {
   }
 })
 
+// Function to fetch dashboard data from the backend
+async function fetchDashboardData() {
+  try {
+    const response = await fetch('/api/dashboard-data');
+    if (!response.ok) {
+      // If the server response is not OK (e.g., 401 Unauthorized, 500 Server Error)
+      // or if the user is redirected to login, this might not be an error in the fetch itself
+      // but rather an indication of failed authentication or other issues.
+      console.error('Failed to fetch dashboard data, status:', response.status);
+      // If redirected to a login page, the response might be an HTML page
+      const text = await response.text();
+      console.log('Response text (may be login page):', text.substring(0, 500)); // Log first 500 chars
+      return;
+    }
+    const data = await response.json();
+    console.log('Dashboard data:', data);
+    // Here you would typically update the UI with the fetched data
+    // For example: document.getElementById('totalUsers').innerText = data.totalUsers;
+  } catch (error) {
+    console.error('Error fetching or parsing dashboard data:', error);
+  }
+}
+
+// Call the function when the page loads or when appropriate
+// For example, if using DOMContentLoaded:
+document.addEventListener('DOMContentLoaded', () => {
+  // Check if we are on the main dashboard page (index.html) before fetching.
+  // This is a simple check; more robust routing/logic might be needed for a complex app.
+  if (window.location.pathname === '/' || window.location.pathname.endsWith('index.html')) {
+    fetchDashboardData();
+  }
+});
+
 // eslint-disable-next-line no-unused-vars
 const cardChart2 = new Chart(document.getElementById('card-chart2'), {
   type: 'line',
